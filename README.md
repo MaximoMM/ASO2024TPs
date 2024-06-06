@@ -6,10 +6,10 @@ A- El primer código (conhilos.py) usa hilos para ejecutar tareas simultáneamen
 
 B- Comparándolo con un compañero los tiempos no son iguales, pero no estan tan alejados.
 
-C- Al ejecutar el archivo suma_rasta.py, sin sincronización adecuada, se produce una race condition entre los hilos sumador y restador, que acceden y modifican la variable acumuladora simultáneamente. Al introducir una pausa en cada iteración del bucle, se reduce la probabilidad de race condition, pero no se resuelve completamente el problema. Para garantizar la consistencia, es necesario aplicar sincronización, como el uso de threading.Lock, para asegurar que solo un hilo modifique la variable compartida a la vez en la zona crítica.
+(correccion) C- Al ejecutar el archivo suma_rasta.py, sin sincronización adecuada, se produce una race condition entre los hilos sumador y restador, que acceden y modifican la variable acumuladora simultáneamente. Al introducir una pausa en cada iteración del bucle, se reduce la probabilidad de race condition, pero no se resuelve completamente el problema. Para garantizar la consistencia, es necesario aplicar sincronización, como el uso de threading.Lock, para asegurar que solo un hilo modifique la variable compartida a la vez en la zona crítica.
 
 2)
-A- Codigo:
+(correccion) A- Codigo:
 
 ```
 #include <pthread.h>
@@ -75,6 +75,7 @@ int main(int argc, char argv[])
 ```
 ![image](https://github.com/MaximoMM/ASO2024TPs/assets/167033604/95b16502-7558-4f02-bdcc-93b4107662e3)
 
-B-
+(correccion) B-
 
-![image](https://github.com/MaximoMM/ASO2024TPs/assets/167033604/f9b19720-3036-4c57-b689-3e0ddcdfc464)
+![image](https://github.com/MaximoMM/ASO2024TPs/assets/167033604/d73d0939-c7a4-486d-8041-00b8c011eae3)
+
