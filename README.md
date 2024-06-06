@@ -78,5 +78,3 @@ int main(int argc, char argv[])
 (correccion) B-
 
 ![image](https://github.com/MaximoMM/ASO2024TPs/assets/167033604/d73d0939-c7a4-486d-8041-00b8c011eae3)
-
-
