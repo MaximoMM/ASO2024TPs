@@ -6,7 +6,7 @@ A- El primer código (conhilos.py) usa hilos para ejecutar tareas simultáneamen
 
 B- Comparándolo con un compañero los tiempos no son iguales, pero no estan tan alejados.
 
-C- Si descomentas esas líneas se añade una espera adicional en cada hilo. Esto puede agregarle una demora a la variable compartida e influye en el resultado final o en el tiempo de ejecución.
+C- Al ejecutar el archivo suma_rasta.py, sin sincronización adecuada, se produce una race condition entre los hilos sumador y restador, que acceden y modifican la variable acumuladora simultáneamente. Al introducir una pausa en cada iteración del bucle, se reduce la probabilidad de race condition, pero no se resuelve completamente el problema. Para garantizar la consistencia, es necesario aplicar sincronización, como el uso de threading.Lock, para asegurar que solo un hilo modifique la variable compartida a la vez en la zona crítica.
 
 2)
 A- Codigo:
@@ -15,76 +15,65 @@ A- Codigo:
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h> // para usar intptr_t
 
 #define NUMBER_OF_THREADS 2
 #define CANTIDAD_INICIAL_HAMBURGUESAS 20
 
 int cantidad_restante_hamburguesas = CANTIDAD_INICIAL_HAMBURGUESAS;
-pthread_mutex_t lock; // Mutex para controlar el acceso a la variable compartida
-int turno = 0; // Variable para el turno de acceso
-
-void *comer_hamburguesa(void *tid)
+int turno = 0; // coloque el codigo aqui
+void comer_hamburguesa(voidtid)
 {
-    int id = (intptr_t) tid;
-    while (1)
+    while (1 == 1)
     {
-        // Esperar al turno
-        while (turno != id)
-        {
-            // Pequeña pausa para evitar consumir recursos innecesarios
-            sched_yield();
-        }
 
-        pthread_mutex_lock(&lock); // Bloquear la sección crítica
+        while (turno != (int)tid) //coloque el codigo aqui
+            ; 
+
+        // INICIO DE LA ZONA CRÍTICA
         if (cantidad_restante_hamburguesas > 0)
         {
-            printf("Hola! soy el hilo (comensal) %d , me voy a comer una hamburguesa ! ya que todavia queda/n %d \n", id, cantidad_restante_hamburguesas);
-            cantidad_restante_hamburguesas--; // me como una hamburguesa
+            printf("Hola! Soy el hilo(comensal) %d, me voy a comer una hamburguesa! Todavía quedan %d \n", (int)tid, cantidad_restante_hamburguesas);
+            cantidad_restante_hamburguesas--; // Me como una hamburguesa
+
         }
         else
         {
-            printf("SE TERMINARON LAS HAMBURGUESAS :( \n");
-            pthread_mutex_unlock(&lock); // Desbloquear antes de salir de la función
-            pthread_exit(NULL); // forzar terminacion del hilo
+            printf("SE TERMINARON LAS HAMBURGUESAS  \n");
+            turno = (turno + 1)% NUMBER_OF_THREADS;
+            pthread_exit(NULL); // Forzar terminación del hilo
         }
-        turno = (turno + 1) % NUMBER_OF_THREADS; // Cambiar el turno
-        pthread_mutex_unlock(&lock); // Desbloquear la sección crítica
+        turno = (turno + 1) % NUMBER_OF_THREADS; // coloque el codigo aqui
+
+        // SALIDA DE LA ZONA CRÍTICA
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char argv[])
 {
     pthread_t threads[NUMBER_OF_THREADS];
-    int status, ret;
-    pthread_mutex_init(&lock, NULL); // Inicializar el mutex
+    int status, i, ret;
+
     for (int i = 0; i < NUMBER_OF_THREADS; i++)
     {
         printf("Hola!, soy el hilo principal. Estoy creando el hilo %d \n", i);
-        status = pthread_create(&threads[i], NULL, comer_hamburguesa, (void *)(intptr_t)i);
+        status = pthread_create(&threads[i], NULL, comer_hamburguesa, (void)i);
         if (status != 0)
         {
-            printf("Algo salio mal, al crear el hilo recibi el codigo de error %d \n", status);
+            printf("Algo salió mal, al crear el hilo recibí el código de error %d \n", status);
             exit(-1);
         }
     }
 
-    for (int i = 0; i < NUMBER_OF_THREADS; i++)
+    for (i = 0; i < NUMBER_OF_THREADS; i++)
     {
-        ret = pthread_join(threads[i], NULL); // espero por la terminacion de los hilos que cree
-        if (ret != 0)
-        {
-            printf("Error al esperar la terminación del hilo %d, código de error %d \n", i, ret);
-        }
+        void *retval;
+        ret = pthread_join(threads[i], &retval); // Esperar por la terminación de los hilos que creé
     }
 
-    pthread_mutex_destroy(&lock); // Destruir el mutex
-    printf("Todos los hilos han terminado. Adios!\n");
-    return 0; // Finalizar el programa
+    pthread_exit(NULL); // Terminar el programa
 }
 ```
-
-![image](https://github.com/MaximoMM/ASO2024TPs/assets/167033604/7d9ac815-eebc-4d00-a99e-d242cd1825ff)
+![image](https://github.com/MaximoMM/ASO2024TPs/assets/167033604/95b16502-7558-4f02-bdcc-93b4107662e3)
 
 B-
 
